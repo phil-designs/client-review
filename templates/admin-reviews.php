@@ -1,4 +1,10 @@
-<?php defined( 'ABSPATH' ) || exit;
+<?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template included by plugin class; vars are local to this include.
+/** @var array  $reviewers          */
+/** @var int    $selected_reviewer  */
+/** @var array  $pages              */
+/** @var string $reviewer_name      */
 $status_labels = [
 	'open'                => 'Open',
 	'resolved'            => 'Done',
@@ -64,7 +70,7 @@ $device_labels = [ 'desktop' => 'Desktop', 'tablet' => 'Tablet', 'mobile' => 'Mo
 										<?php foreach ( $annotations as $i => $ann ) : ?>
 											<div class="cr-annotation-card cr-ann-status--<?php echo esc_attr( $ann->status ); ?>" data-id="<?php echo (int) $ann->id; ?>">
 												<div class="cr-ann-header">
-													<span class="cr-ann-number"><?php echo $i + 1; ?></span>
+													<span class="cr-ann-number"><?php echo (int) ( $i + 1 ); ?></span>
 													<span class="cr-ann-meta">
 														<?php echo esc_html( wp_date( 'M j, g:ia', strtotime( $ann->created_at ) ) ); ?>
 													</span>

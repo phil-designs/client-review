@@ -55,6 +55,8 @@ class CR_Admin {
 	public static function render_reviews_page(): void {
 		global $wpdb;
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// $wpdb->users and $wpdb->prefix are WP core internals, not user input.
 		$reviewers = $wpdb->get_results(
 			"SELECT u.ID, u.display_name,
 			        COUNT(a.id)                                              AS total,
@@ -66,8 +68,10 @@ class CR_Admin {
 			 GROUP BY u.ID
 			 ORDER BY last_activity DESC"
 		) ?: [];
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$selected_reviewer = (int) ( $_GET['reviewer'] ?? 0 );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- read-only filter; (int) cast ensures safe use.
+		$selected_reviewer = isset( $_GET['reviewer'] ) ? (int) wp_unslash( $_GET['reviewer'] ) : 0;
 		$pages             = [];
 		$reviewer_name     = '';
 
@@ -75,10 +79,12 @@ class CR_Admin {
 			$rev = get_user_by( 'id', $selected_reviewer );
 			if ( $rev ) $reviewer_name = $rev->display_name;
 
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$annotations = $wpdb->get_results( $wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}cr_annotations WHERE user_id = %d ORDER BY page_url, device, created_at",
 				$selected_reviewer
 			) ) ?: [];
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			foreach ( $annotations as $ann ) {
 				$pages[ $ann->page_url ][ $ann->device ][] = $ann;

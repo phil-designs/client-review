@@ -63,6 +63,7 @@ class CR_Annotation {
 		$user_id  = get_current_user_id();
 		$is_admin = current_user_can( 'manage_options' );
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$rows = $wpdb->get_results( $wpdb->prepare(
 			"SELECT a.*, u.display_name AS author_name
 			 FROM {$wpdb->prefix}cr_annotations a
@@ -72,6 +73,7 @@ class CR_Annotation {
 			$page_url,
 			$device
 		) ) ?: [];
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		foreach ( $rows as $row ) {
 			$row->can_edit      = $is_admin || (int) $row->user_id === $user_id;
@@ -85,6 +87,7 @@ class CR_Annotation {
 		global $wpdb;
 		$data = $request->get_json_params();
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$result = $wpdb->insert( "{$wpdb->prefix}cr_annotations", [
 			'user_id'   => get_current_user_id(),
 			'page_url'  => sanitize_text_field( $data['page_url'] ?? '' ),
@@ -107,6 +110,7 @@ class CR_Annotation {
 			 WHERE a.id = %d",
 			$id
 		) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$row->can_edit       = true;
 		$row->author_is_admin = current_user_can( 'manage_options' );
 
@@ -118,7 +122,9 @@ class CR_Annotation {
 		$id      = (int) $request->get_param( 'id' );
 		$user_id = get_current_user_id();
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$existing = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cr_annotations WHERE id = %d", $id ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( ! $existing ) return new WP_Error( 'not_found', 'Not found.', [ 'status' => 404 ] );
 
 		if ( (int) $existing->user_id !== $user_id && ! current_user_can( 'manage_options' ) ) {
@@ -126,6 +132,7 @@ class CR_Annotation {
 		}
 
 		$data = $request->get_json_params();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( "{$wpdb->prefix}cr_annotations", [
 			'comment' => sanitize_textarea_field( $data['comment'] ?? $existing->comment ),
 		], [ 'id' => $id ] );
@@ -138,13 +145,16 @@ class CR_Annotation {
 		$id      = (int) $request->get_param( 'id' );
 		$user_id = get_current_user_id();
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$existing = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cr_annotations WHERE id = %d", $id ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( ! $existing ) return new WP_Error( 'not_found', 'Not found.', [ 'status' => 404 ] );
 
 		if ( (int) $existing->user_id !== $user_id && ! current_user_can( 'manage_options' ) ) {
 			return new WP_Error( 'forbidden', 'You can only delete your own comments.', [ 'status' => 403 ] );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( "{$wpdb->prefix}cr_annotations", [ 'id' => $id ] );
 		return rest_ensure_response( [ 'success' => true ] );
 	}
@@ -169,6 +179,7 @@ class CR_Annotation {
 			$update['admin_note'] = sanitize_textarea_field( $data['admin_note'] );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( "{$wpdb->prefix}cr_annotations", $update, [ 'id' => $id ] );
 		return rest_ensure_response( [ 'success' => true ] );
 	}

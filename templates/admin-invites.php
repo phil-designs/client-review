@@ -1,4 +1,7 @@
-<?php defined( 'ABSPATH' ) || exit; ?>
+<?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template included by plugin class; vars are local to this include.
+?>
 <div class="wrap cr-admin-wrap">
 	<h1 class="wp-heading-inline">Client Review &mdash; Invite Links</h1>
 

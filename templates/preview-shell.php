@@ -1,5 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- standalone template page; vars are local to this include.
 require_once __DIR__ . '/../includes/class-cr-settings.php';
 $_cr_url  = plugin_dir_url( dirname( __FILE__ ) . '/../client-review.php' );
 $_cr_ver  = '1.4.0';
@@ -15,11 +16,13 @@ $_cr_vars = CR_Settings::css_vars( $_cr_s );
 	<title>Client Review &mdash; <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<?php // phpcs:disable WordPress.WP.EnqueuedResources -- standalone HTML page rendered outside WP template system; wp_enqueue_style/script() not applicable. ?>
 	<?php if ( $_cr_gf ) : ?>
 	<link rel="stylesheet" href="<?php echo esc_url( $_cr_gf ); ?>">
 	<?php endif; ?>
 	<link rel="stylesheet" href="<?php echo esc_url( $_cr_url . 'assets/css/preview.css' ); ?>?v=<?php echo esc_attr( $_cr_ver ); ?>">
-	<style><?php echo $_cr_vars; ?></style>
+	<?php // phpcs:enable WordPress.WP.EnqueuedResources ?>
+	<style><?php echo $_cr_vars; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS custom properties built from sanitized values in CR_Settings::css_vars(). ?></style>
 </head>
 <body class="cr-shell">
 
@@ -137,7 +140,7 @@ var crPreview = <?php echo wp_json_encode( [
 	'isAdmin'   => current_user_can( 'manage_options' ),
 ] ); ?>;
 </script>
-<script src="<?php echo esc_url( $_cr_url . 'assets/js/preview.js' ); ?>?v=<?php echo esc_attr( $_cr_ver ); ?>"></script>
+<?php wp_print_script_tag( [ 'src' => esc_url( $_cr_url . 'assets/js/preview.js' ) . '?v=' . esc_attr( $_cr_ver ) ] ); ?>
 
 </body>
 </html>

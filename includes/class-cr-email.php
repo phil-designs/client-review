@@ -9,12 +9,14 @@ class CR_Email {
 		$user = get_user_by( 'id', $user_id );
 		if ( ! $user ) return false;
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$all_annotations = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}cr_annotations
 			 WHERE user_id = %d
 			 ORDER BY page_url, device, created_at",
 			$user_id
 		) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( empty( $all_annotations ) ) return false;
 

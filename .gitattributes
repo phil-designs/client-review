@@ -1,2 +1,9 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Exclude development files from GitHub ZIP exports
+.gitattributes export-ignore
+.gitignore     export-ignore
+.distignore    export-ignore
+.DS_Store      export-ignore
+README.md      export-ignore

@@ -77,7 +77,8 @@ class CR_Settings {
 		check_admin_referer( 'cr_save_settings' );
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized' );
 
-		$raw  = $_POST['cr_settings'] ?? [];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- each field is sanitized/unslashed individually below.
+		$raw  = isset( $_POST['cr_settings'] ) ? wp_unslash( $_POST['cr_settings'] ) : [];
 		$data = [];
 
 		$allowed_fonts = array_keys( self::FONTS );
@@ -125,7 +126,7 @@ class CR_Settings {
 		}
 
 		update_option( self::OPTION, $data );
-		wp_redirect( add_query_arg( [ 'page' => 'cr-settings', 'saved' => '1' ], admin_url( 'admin.php' ) ) );
+		wp_safe_redirect( add_query_arg( [ 'page' => 'cr-settings', 'saved' => '1' ], admin_url( 'admin.php' ) ) );
 		exit;
 	}
 

@@ -1,4 +1,9 @@
-<?php defined( 'ABSPATH' ) || exit;
+<?php
+defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template included by plugin class; vars are local to this include.
+/** @var WP_User $user             */
+/** @var array   $all_annotations  */
+/** @var array   $pages            */
 require_once __DIR__ . '/../includes/class-cr-settings.php';
 $admin_review_url = admin_url( 'admin.php?page=client-review-reviews&reviewer=' . $user->ID );
 $site_name        = get_bloginfo( 'name' );
@@ -34,8 +39,8 @@ $_cr_radius       = absint( $_cr_s['btn_border_radius'] ) . 'px';
 		<td style="padding:28px 36px 20px;">
 			<p style="margin:0;font-size:15px;line-height:1.6;">
 				<strong><?php echo esc_html( $user->display_name ); ?></strong> has submitted a review with
-				<strong><?php echo count( $all_annotations ); ?> comment<?php echo count( $all_annotations ) !== 1 ? 's' : ''; ?></strong>
-				across <?php echo count( $pages ); ?> page<?php echo count( $pages ) !== 1 ? 's' : ''; ?>.
+				<strong><?php echo (int) count( $all_annotations ); ?> comment<?php echo count( $all_annotations ) !== 1 ? 's' : ''; ?></strong>
+				across <?php echo (int) count( $pages ); ?> page<?php echo count( $pages ) !== 1 ? 's' : ''; ?>.
 			</p>
 			<p style="margin:12px 0 0;">
 				<a href="<?php echo esc_url( $admin_review_url ); ?>" style="display:inline-block;background:<?php echo esc_attr( $_cr_accent ); ?>;color:#ffffff;padding:10px 20px;border-radius:<?php echo esc_attr( $_cr_radius ); ?>;text-decoration:none;font-size:14px;font-weight:600;">View in Dashboard &rarr;</a>
@@ -72,7 +77,7 @@ $_cr_radius       = absint( $_cr_s['btn_border_radius'] ) . 'px';
 					<td style="padding:12px 16px;">
 						<table width="100%" cellpadding="0" cellspacing="0">
 							<tr>
-								<td style="font-size:13px;color:#64748b;">#<?php echo $ann_index++; ?></td>
+								<td style="font-size:13px;color:#64748b;">#<?php echo (int) $ann_index++; ?></td>
 								<td align="right">
 									<span style="font-size:11px;font-weight:600;color:<?php echo esc_attr( $status_color ); ?>;background:<?php echo esc_attr( $status_color ); ?>1a;padding:2px 8px;border-radius:10px;">
 										<?php echo esc_html( $status_label ); ?>

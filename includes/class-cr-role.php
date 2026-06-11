@@ -32,7 +32,7 @@ class CR_Role {
 
 	public static function block_admin_access(): void {
 		if ( current_user_can( self::CAP ) && ! defined( 'DOING_AJAX' ) ) {
-			wp_redirect( home_url( '/' . self::SHELL_SLUG . '/' ) );
+			wp_safe_redirect( home_url( '/' . self::SHELL_SLUG . '/' ) );
 			exit;
 		}
 	}

@@ -1,5 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- standalone template page; vars are local to this include.
 require_once __DIR__ . '/../includes/class-cr-settings.php';
 /** @var object|null $invite */
 /** @var string      $error  */
@@ -15,11 +16,13 @@ $_cr_gf = CR_Settings::google_fonts_url( $_cr_s );
 	<title>Review Access &mdash; <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<?php // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- standalone HTML page; wp_enqueue_style() not applicable. ?>
 	<?php if ( $_cr_gf ) : ?>
 	<link rel="stylesheet" href="<?php echo esc_url( $_cr_gf ); ?>">
 	<?php endif; ?>
+	<?php // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 	<style>
-		<?php echo CR_Settings::css_vars( $_cr_s ); ?>
+		<?php echo CR_Settings::css_vars( $_cr_s ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from sanitized values in CR_Settings::css_vars(). ?>
 
 		*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 		body {
@@ -172,10 +175,10 @@ $_cr_gf = CR_Settings::google_fonts_url( $_cr_s );
 					type="text"
 					id="cr_name"
 					name="cr_name"
-					value="<?php echo esc_attr( wp_unslash( $_POST['cr_name'] ?? '' ) ); ?>"
+					value="<?php echo esc_attr( wp_unslash( $_POST['cr_name'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- sticky field; nonce verified in CR_Invite::handle_registration_post(). ?>"
 					required
 					autocomplete="name"
-					class="<?php echo str_contains( $error, 'name' ) ? 'error' : ''; ?>"
+					class="<?php echo esc_attr( str_contains( $error, 'name' ) ? 'error' : '' ); ?>"
 				>
 			</div>
 
@@ -185,10 +188,10 @@ $_cr_gf = CR_Settings::google_fonts_url( $_cr_s );
 					type="email"
 					id="cr_email"
 					name="cr_email"
-					value="<?php echo esc_attr( wp_unslash( $_POST['cr_email'] ?? '' ) ); ?>"
+					value="<?php echo esc_attr( wp_unslash( $_POST['cr_email'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- sticky field; nonce verified in CR_Invite::handle_registration_post(). ?>"
 					required
 					autocomplete="email"
-					class="<?php echo str_contains( $error, 'email' ) ? 'error' : ''; ?>"
+					class="<?php echo esc_attr( str_contains( $error, 'email' ) ? 'error' : '' ); ?>"
 				>
 			</div>
 
@@ -200,7 +203,7 @@ $_cr_gf = CR_Settings::google_fonts_url( $_cr_s );
 					name="cr_password"
 					required
 					autocomplete="new-password"
-					class="<?php echo str_contains( $error, 'password' ) ? 'error' : ''; ?>"
+					class="<?php echo esc_attr( str_contains( $error, 'password' ) ? 'error' : '' ); ?>"
 				>
 				<p class="hint">Minimum 8 characters</p>
 			</div>

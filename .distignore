@@ -1,0 +1,6 @@
+.git
+.gitattributes
+.gitignore
+.distignore
+.DS_Store
+README.md

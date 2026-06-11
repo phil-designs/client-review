@@ -1,5 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template included by plugin class; vars are local to this include.
 require_once __DIR__ . '/../includes/class-cr-settings.php';
 /** @var array $settings */
 $s = $settings;
@@ -8,7 +9,8 @@ $fonts = CR_Settings::FONTS;
 <div class="wrap cr-admin-wrap">
 	<h1>Client Review &mdash; Settings</h1>
 
-	<?php if ( isset( $_GET['saved'] ) ) : ?>
+	<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flag set after redirect from save action; no state change here.
+	if ( isset( $_GET['saved'] ) ) : ?>
 		<div class="notice notice-success is-dismissible"><p>Settings saved.</p></div>
 	<?php endif; ?>
 

@@ -30,12 +30,12 @@ class CR_Preview {
 		if ( ! get_query_var( 'cr_preview_shell' ) ) return;
 
 		if ( ! is_user_logged_in() ) {
-			wp_redirect( wp_login_url( home_url( '/' . CR_Role::SHELL_SLUG . '/' ) ) );
+			wp_safe_redirect( wp_login_url( home_url( '/' . CR_Role::SHELL_SLUG . '/' ) ) );
 			exit;
 		}
 
 		if ( ! current_user_can( CR_Role::CAP ) && ! current_user_can( 'manage_options' ) ) {
-			wp_redirect( home_url( '/' ) );
+			wp_safe_redirect( home_url( '/' ) );
 			exit;
 		}
 
@@ -50,18 +50,20 @@ class CR_Preview {
 			$dest = ( current_user_can( CR_Role::CAP ) || current_user_can( 'manage_options' ) )
 				? home_url( '/' . CR_Role::SHELL_SLUG . '/' )
 				: home_url( '/' );
-			wp_redirect( $dest );
+			wp_safe_redirect( $dest );
 			exit;
 		}
 
 		$error = '';
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- REQUEST_METHOD is always set in HTTP context.
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 			$nonce = isset( $_POST['cr_login_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['cr_login_nonce'] ) ) : '';
 			if ( ! wp_verify_nonce( $nonce, 'cr_login' ) ) {
 				$error = 'invalid_nonce';
 			} else {
 				$email    = sanitize_email( wp_unslash( $_POST['cr_email']    ?? '' ) );
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password passed directly to wp_signon(); sanitizing could corrupt it.
 				$password = wp_unslash( $_POST['cr_password'] ?? '' );
 
 				if ( empty( $email ) ) {
@@ -85,7 +87,7 @@ class CR_Preview {
 								$redirect = $to;
 							}
 						}
-						wp_redirect( $redirect );
+						wp_safe_redirect( $redirect );
 						exit;
 					}
 				}

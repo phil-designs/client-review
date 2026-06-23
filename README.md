@@ -174,8 +174,10 @@ Inside the preview shell the client will see:
 2. Click a client name to load their full comment list, grouped by page and device
 3. For each comment you can change the **status** (Open / Done / Needs Clarification) and add an **admin note**
 
+---
 
 <!-- ADMIN MENU REFERENCE -->
+## Admin Menu Reference
 
 | Page | Location | Purpose |
 |------|----------|---------|

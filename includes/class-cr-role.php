@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class CR_Role {
+class PDCR_Role {
 
 	const ROLE      = 'client_reviewer';
 	const CAP       = 'client_reviewer';

@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once __DIR__ . '/class-cr-role.php';
 
-class CR_Annotation {
+class PDCR_Annotation {
 
 	public static function init(): void {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_routes' ] );
@@ -41,7 +41,7 @@ class CR_Annotation {
 			[
 				'methods'             => 'PATCH',
 				'callback'            => [ __CLASS__, 'patch_status' ],
-				'permission_callback' => '__return_true',
+				'permission_callback' => [ __CLASS__, 'can_access' ],
 			],
 		] );
 	}
@@ -49,7 +49,7 @@ class CR_Annotation {
 	public static function can_access(): bool {
 		return is_user_logged_in() && (
 			current_user_can( 'manage_options' ) ||
-			current_user_can( CR_Role::CAP )
+			current_user_can( PDCR_Role::CAP )
 		);
 	}
 

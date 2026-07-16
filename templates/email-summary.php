@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/class-cr-settings.php';
 $admin_review_url = admin_url( 'admin.php?page=client-review-reviews&reviewer=' . $user->ID );
 $site_name        = get_bloginfo( 'name' );
 $site_url         = home_url( '/' );
-$_cr_s            = CR_Settings::get();
+$_cr_s            = PDCR_Settings::get();
 $_cr_accent       = $_cr_s['accent'];
 $_cr_radius       = absint( $_cr_s['btn_border_radius'] ) . 'px';
 ?>

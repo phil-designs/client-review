@@ -411,10 +411,10 @@
 
 		try {
 			const fd = new FormData();
-			fd.append('action', 'cr_finish_review');
-			fd.append('nonce',  crPreview.ajaxNonce);
+			fd.append('action', 'pdcr_finish_review');
+			fd.append('nonce',  pdcrPreview.ajaxNonce);
 
-			const res  = await fetch(crPreview.ajaxUrl, { method: 'POST', body: fd });
+			const res  = await fetch(pdcrPreview.ajaxUrl, { method: 'POST', body: fd });
 			const data = await res.json();
 
 			modalBackdrop.style.display = 'none';
@@ -431,13 +431,13 @@
 	async function apiFetch(endpoint, method = 'GET', body = null) {
 		const opts = {
 			method,
-			headers: { 'X-WP-Nonce': crPreview.restNonce },
+			headers: { 'X-WP-Nonce': pdcrPreview.restNonce },
 		};
 		if (body) {
 			opts.headers['Content-Type'] = 'application/json';
 			opts.body = JSON.stringify(body);
 		}
-		const res = await fetch(crPreview.restUrl + endpoint, opts);
+		const res = await fetch(pdcrPreview.restUrl + endpoint, opts);
 		if (!res.ok) throw new Error('API error: ' + res.status);
 		return res.json();
 	}

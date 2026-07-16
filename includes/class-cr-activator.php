@@ -3,12 +3,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once __DIR__ . '/class-cr-role.php';
 
-class CR_Activator {
+class PDCR_Activator {
 
 	public static function activate(): void {
 		self::create_tables();
-		CR_Role::register();
-		add_rewrite_rule( '^' . CR_Role::SHELL_SLUG . '/?$', 'index.php?cr_preview_shell=1', 'top' );
+		PDCR_Role::register();
+		add_rewrite_rule( '^' . PDCR_Role::SHELL_SLUG . '/?$', 'index.php?cr_preview_shell=1', 'top' );
 		flush_rewrite_rules();
 	}
 

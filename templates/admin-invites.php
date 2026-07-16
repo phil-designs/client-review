@@ -59,7 +59,7 @@ defined( 'ABSPATH' ) || exit;
 						<td><?php echo $used ? esc_html( $inv->reviewer_name ?: 'Unknown' ) : '—'; ?></td>
 						<td>
 							<?php if ( $status === 'active' ) : ?>
-								<code class="cr-token-url"><?php echo esc_html( CR_Invite::get_invite_url( $inv->token ) ); ?></code>
+								<code class="cr-token-url"><?php echo esc_html( PDCR_Invite::get_invite_url( $inv->token ) ); ?></code>
 							<?php else : ?>
 								<span class="cr-muted">—</span>
 							<?php endif; ?>

@@ -1,7 +1,7 @@
 /* Client Review — Admin Dashboard */
 jQuery(function ($) {
 
-	const { nonce, restNonce, restUrl, ajaxUrl } = crAdmin;
+	const { nonce, restNonce, restUrl, ajaxUrl } = pdcrAdmin;
 
 	// ── Generate invite link ──────────────────────────────────
 	$('#cr-generate-btn').on('click', async function () {
@@ -12,7 +12,7 @@ jQuery(function ($) {
 			const res = await $.ajax({
 				url:    ajaxUrl,
 				method: 'POST',
-				data:   { action: 'cr_generate_invite', nonce, label },
+				data:   { action: 'pdcr_generate_invite', nonce, label },
 			});
 
 			if (res.success) {
@@ -48,7 +48,7 @@ jQuery(function ($) {
 			const res = await $.ajax({
 				url:    ajaxUrl,
 				method: 'POST',
-				data:   { action: 'cr_delete_invite', nonce, token },
+				data:   { action: 'pdcr_delete_invite', nonce, token },
 			});
 			if (res.success) btn.closest('tr').fadeOut(200);
 		} catch (e) {

@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class CR_Email {
+class PDCR_Email {
 
 	public static function send_review_summary( int $user_id ): bool {
 		global $wpdb;

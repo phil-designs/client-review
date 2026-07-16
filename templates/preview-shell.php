@@ -2,11 +2,6 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- standalone template page; vars are local to this include.
 require_once __DIR__ . '/../includes/class-cr-settings.php';
-$_cr_url  = plugin_dir_url( dirname( __FILE__ ) . '/../client-review.php' );
-$_cr_ver  = '1.4.0';
-$_cr_s    = CR_Settings::get();
-$_cr_gf   = CR_Settings::google_fonts_url( $_cr_s );
-$_cr_vars = CR_Settings::css_vars( $_cr_s );
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,15 +9,7 @@ $_cr_vars = CR_Settings::css_vars( $_cr_s );
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Client Review &mdash; <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<?php // phpcs:disable WordPress.WP.EnqueuedResources -- standalone HTML page rendered outside WP template system; wp_enqueue_style/script() not applicable. ?>
-	<?php if ( $_cr_gf ) : ?>
-	<link rel="stylesheet" href="<?php echo esc_url( $_cr_gf ); ?>">
-	<?php endif; ?>
-	<link rel="stylesheet" href="<?php echo esc_url( $_cr_url . 'assets/css/preview.css' ); ?>?v=<?php echo esc_attr( $_cr_ver ); ?>">
-	<?php // phpcs:enable WordPress.WP.EnqueuedResources ?>
-	<style><?php echo $_cr_vars; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS custom properties built from sanitized values in CR_Settings::css_vars(). ?></style>
+	<?php wp_head(); ?>
 </head>
 <body class="cr-shell">
 
@@ -126,21 +113,6 @@ $_cr_vars = CR_Settings::css_vars( $_cr_s );
 	Click anywhere on the page to drop a pin &mdash; or press <kbd>Esc</kbd> to cancel
 </div>
 
-<script>
-var crPreview = <?php echo wp_json_encode( [
-	'restUrl'   => rest_url( 'client-review/v1/' ),
-	'restNonce' => wp_create_nonce( 'wp_rest' ),
-	'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-	'ajaxNonce' => wp_create_nonce( 'cr_finish_review' ),
-	'siteUrl'   => home_url( '/' ),
-	'currentUser' => [
-		'id'   => get_current_user_id(),
-		'name' => wp_get_current_user()->display_name,
-	],
-	'isAdmin'   => current_user_can( 'manage_options' ),
-] ); ?>;
-</script>
-<?php wp_print_script_tag( [ 'src' => esc_url( $_cr_url . 'assets/js/preview.js' ) . '?v=' . esc_attr( $_cr_ver ) ] ); ?>
-
+<?php wp_footer(); ?>
 </body>
 </html>

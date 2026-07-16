@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once __DIR__ . '/class-cr-role.php';
 
-class CR_Settings {
+class PDCR_Settings {
 
-	const OPTION = 'cr_settings';
+	const OPTION = 'pdcr_settings';
 
 	const FONTS = [
 		'Oswald'           => [400, 500, 600],
@@ -63,6 +63,8 @@ class CR_Settings {
 		'btn_secondary_hover_bg_transparent'  => '',
 		'btn_secondary_hover_border'          => '#F7941D',
 		'btn_secondary_hover_color'           => '#ffffff',
+
+		'use_remote_google_fonts' => '',
 	];
 
 	public static function get(): array {
@@ -70,15 +72,15 @@ class CR_Settings {
 	}
 
 	public static function init(): void {
-		add_action( 'admin_post_cr_save_settings', [ __CLASS__, 'save' ] );
+		add_action( 'admin_post_pdcr_save_settings', [ __CLASS__, 'save' ] );
 	}
 
 	public static function save(): void {
-		check_admin_referer( 'cr_save_settings' );
+		check_admin_referer( 'pdcr_save_settings' );
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized' );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- each field is sanitized/unslashed individually below.
-		$raw  = isset( $_POST['cr_settings'] ) ? wp_unslash( $_POST['cr_settings'] ) : [];
+		$raw  = isset( $_POST['pdcr_settings'] ) ? wp_unslash( $_POST['pdcr_settings'] ) : [];
 		$data = [];
 
 		$allowed_fonts = array_keys( self::FONTS );
@@ -125,12 +127,78 @@ class CR_Settings {
 			$data[$key] = isset( $raw[$key] ) ? '1' : '';
 		}
 
+		$data['use_remote_google_fonts'] = isset( $raw['use_remote_google_fonts'] ) ? '1' : '';
+
 		update_option( self::OPTION, $data );
-		wp_safe_redirect( add_query_arg( [ 'page' => 'cr-settings', 'saved' => '1' ], admin_url( 'admin.php' ) ) );
+		wp_safe_redirect( add_query_arg( [ 'page' => 'pdcr-settings', 'saved' => '1' ], admin_url( 'admin.php' ) ) );
 		exit;
 	}
 
-	public static function google_fonts_url( array $s ): string {
+	public static function plugin_url(): string {
+		return plugin_dir_url( __DIR__ . '/../client-review.php' );
+	}
+
+	/**
+	 * Strips every enqueued style/script down to an explicit allow-list.
+	 *
+	 * The login, registration, and preview-shell pages are standalone,
+	 * fully custom screens — they were never meant to inherit the active
+	 * theme's global stylesheet or layout scripts. Now that they properly
+	 * call wp_head()/wp_footer() (required to enqueue our own assets the
+	 * WordPress-approved way), the theme's own assets load right alongside
+	 * ours and can visually conflict (e.g. a theme-wide `iframe { height:
+	 * auto }` reset, or global input/box-sizing resets). Pruning the queue
+	 * down to our own handles at the last possible moment keeps these
+	 * pages isolated the way they were originally designed, while still
+	 * using wp_enqueue_style()/wp_enqueue_script() throughout.
+	 */
+	public static function isolate_page_assets( array $style_handles, array $script_handles = [] ): void {
+		add_action( 'wp_enqueue_scripts', static function () use ( $style_handles, $script_handles ): void {
+			global $wp_styles, $wp_scripts;
+			if ( $wp_styles instanceof WP_Styles ) {
+				$wp_styles->queue = array_values( array_intersect( $wp_styles->queue, $style_handles ) );
+			}
+			if ( $wp_scripts instanceof WP_Scripts ) {
+				$wp_scripts->queue = array_values( array_intersect( $wp_scripts->queue, $script_handles ) );
+			}
+		}, PHP_INT_MAX );
+	}
+
+	/**
+	 * URL of the stylesheet that supplies the plugin's font-family declarations.
+	 *
+	 * Defaults to the bundled, self-hosted @font-face stylesheet so nothing is
+	 * requested from Google's servers unless the site owner explicitly opts in
+	 * via the "use_remote_google_fonts" setting (off by default).
+	 */
+	public static function fonts_stylesheet_url( array $s ): string {
+		if ( ! empty( $s['use_remote_google_fonts'] ) ) {
+			$remote = self::remote_google_fonts_url( $s );
+			if ( $remote ) return $remote;
+		}
+		return self::plugin_url() . 'assets/css/fonts-local.css';
+	}
+
+	/**
+	 * Enqueues the appropriate fonts stylesheet (local by default) and, only
+	 * when the site owner has opted into remote fonts, registers preconnect
+	 * resource hints for Google's font domains.
+	 */
+	public static function enqueue_fonts( array $s ): void {
+		wp_enqueue_style( 'pdcr-fonts', self::fonts_stylesheet_url( $s ), [], PDCR_VERSION );
+
+		if ( ! empty( $s['use_remote_google_fonts'] ) ) {
+			add_filter( 'wp_resource_hints', static function ( array $hints, string $relation_type ): array {
+				if ( 'preconnect' === $relation_type ) {
+					$hints[] = [ 'href' => 'https://fonts.googleapis.com' ];
+					$hints[] = [ 'href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous' ];
+				}
+				return $hints;
+			}, 10, 2 );
+		}
+	}
+
+	public static function remote_google_fonts_url( array $s ): string {
 		$params = [];
 		foreach ( array_unique( [ $s['heading_font'], $s['body_font'] ] ) as $font ) {
 			if ( isset( self::FONTS[$font] ) ) {
@@ -143,18 +211,18 @@ class CR_Settings {
 	}
 
 	public static function text_field( string $key, string $value ): void {
-		echo '<input type="text" id="cr_' . esc_attr( $key ) . '" name="cr_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '" class="regular-text">';
+		echo '<input type="text" id="cr_' . esc_attr( $key ) . '" name="pdcr_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '" class="regular-text">';
 	}
 
 	public static function color_field( string $key, string $value, string $transparent_key = '', string $is_transparent = '' ): void {
 		$id = 'cr_' . $key;
 		echo '<span class="cr-color-wrap">';
-		echo '<input type="color" id="' . esc_attr( $id ) . '" name="cr_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
+		echo '<input type="color" id="' . esc_attr( $id ) . '" name="pdcr_settings[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '">';
 		echo '<input type="text"  value="' . esc_attr( $value ) . '" maxlength="7" placeholder="#000000">';
 		if ( $transparent_key ) {
 			$cb_id = 'cr_' . $transparent_key;
 			echo '<label class="cr-transparent-label">';
-			echo '<input type="checkbox" id="' . esc_attr( $cb_id ) . '" name="cr_settings[' . esc_attr( $transparent_key ) . ']" value="1"' . checked( $is_transparent, '1', false ) . '>';
+			echo '<input type="checkbox" id="' . esc_attr( $cb_id ) . '" name="pdcr_settings[' . esc_attr( $transparent_key ) . ']" value="1"' . checked( $is_transparent, '1', false ) . '>';
 			echo 'Transparent</label>';
 		}
 		echo '</span>';

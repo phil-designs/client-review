@@ -54,7 +54,7 @@ $device_labels = [ 'desktop' => 'Desktop', 'tablet' => 'Tablet', 'mobile' => 'Mo
 				<div class="cr-admin-card">
 					<div class="cr-reviewer-header">
 						<h2><?php echo esc_html( $reviewer_name ); ?></h2>
-						<a href="<?php echo esc_url( home_url( '/' . CR_Role::SHELL_SLUG . '/' ) ); ?>" target="_blank" class="button">Open Preview Shell</a>
+						<a href="<?php echo esc_url( home_url( '/' . PDCR_Role::SHELL_SLUG . '/' ) ); ?>" target="_blank" class="button">Open Preview Shell</a>
 					</div>
 
 					<?php foreach ( $pages as $page_url => $devices ) : ?>

@@ -2,14 +2,15 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once __DIR__ . '/class-cr-role.php';
+require_once __DIR__ . '/class-cr-preview.php';
 
-class CR_Invite {
+class PDCR_Invite {
 
 	public static function init(): void {
 		add_action( 'init',             [ __CLASS__, 'handle_registration_post' ] );
 		add_action( 'template_redirect', [ __CLASS__, 'maybe_show_registration' ] );
-		add_action( 'wp_ajax_cr_generate_invite', [ __CLASS__, 'ajax_generate' ] );
-		add_action( 'wp_ajax_cr_delete_invite',   [ __CLASS__, 'ajax_delete' ] );
+		add_action( 'wp_ajax_pdcr_generate_invite', [ __CLASS__, 'ajax_generate' ] );
+		add_action( 'wp_ajax_pdcr_delete_invite',   [ __CLASS__, 'ajax_delete' ] );
 	}
 
 	// -------------------------------------------------------------------------
@@ -50,7 +51,7 @@ class CR_Invite {
 
 	public static function handle_registration_post(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- token verified via wp_verify_nonce() below; REQUEST_METHOD always set in HTTP context.
-		if ( empty( $_GET['cr_invite'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] || empty( $_POST['cr_register_nonce'] ) ) {
+		if ( empty( $_GET['cr_invite'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] || empty( $_POST['pdcr_register_nonce'] ) ) {
 			return;
 		}
 
@@ -63,7 +64,7 @@ class CR_Invite {
 			exit;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cr_register_nonce'] ) ), 'cr_register_' . $token ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pdcr_register_nonce'] ) ), 'pdcr_register_' . $token ) ) {
 			wp_die( 'Security check failed.' );
 		}
 
@@ -93,7 +94,7 @@ class CR_Invite {
 			exit;
 		}
 
-		wp_update_user( [ 'ID' => $user_id, 'display_name' => $name, 'role' => CR_Role::ROLE ] );
+		wp_update_user( [ 'ID' => $user_id, 'display_name' => $name, 'role' => PDCR_Role::ROLE ] );
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -101,7 +102,7 @@ class CR_Invite {
 
 		wp_set_current_user( $user_id );
 		wp_set_auth_cookie( $user_id );
-		wp_safe_redirect( home_url( '/' . CR_Role::SHELL_SLUG . '/' ) );
+		wp_safe_redirect( home_url( '/' . PDCR_Role::SHELL_SLUG . '/' ) );
 		exit;
 	}
 
@@ -113,7 +114,7 @@ class CR_Invite {
 
 		// Already logged in — send them straight to the shell.
 		if ( is_user_logged_in() ) {
-			wp_safe_redirect( home_url( '/' . CR_Role::SHELL_SLUG . '/' ) );
+			wp_safe_redirect( home_url( '/' . PDCR_Role::SHELL_SLUG . '/' ) );
 			exit;
 		}
 
@@ -123,6 +124,8 @@ class CR_Invite {
 		$error  = sanitize_text_field( wp_unslash( $_GET['cr_error'] ?? '' ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
+		PDCR_Preview::enqueue_auth_assets();
+
 		include __DIR__ . '/../templates/invite-register.php';
 		exit;
 	}
@@ -131,7 +134,7 @@ class CR_Invite {
 	// AJAX
 
 	public static function ajax_generate(): void {
-		check_ajax_referer( 'cr_admin_nonce', 'nonce' );
+		check_ajax_referer( 'pdcr_admin_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error();
 
 		$label = sanitize_text_field( wp_unslash( $_POST['label'] ?? '' ) );
@@ -140,7 +143,7 @@ class CR_Invite {
 	}
 
 	public static function ajax_delete(): void {
-		check_ajax_referer( 'cr_admin_nonce', 'nonce' );
+		check_ajax_referer( 'pdcr_admin_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error();
 
 		global $wpdb;

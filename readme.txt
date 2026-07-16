@@ -1,10 +1,10 @@
 === PhilDesigns Client Review ===
-Contributors: phildesigns
+Contributors: pdidee
 Tags: client review, annotations, feedback, preview, site review
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,12 @@ Yes. The site is rendered in an iframe and clients can navigate normally. Clicki
 
 == Changelog ==
 
+= 1.1.0 =
+* Renamed all classes, hooks, option names, nonces, and asset handles to the `PDCR`/`pdcr_` prefix
+* Fixed a security issue where the annotation status REST endpoint had no permission check
+* Fonts are now self-hosted by default — no request to Google's servers unless explicitly enabled in Settings
+* All CSS and JS are now registered with `wp_enqueue_style()`/`wp_enqueue_script()` instead of being hand-printed in templates
+
 = 1.0.0 =
 * Initial release
 * Single-use invite link system with 30-day expiry
@@ -96,6 +102,9 @@ Yes. The site is rendered in an iframe and clients can navigate normally. Clicki
 * Settings page for typography, accent colour, and button styling customisation
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Internal renaming and a security fix to the annotation status endpoint — safe to update, no admin action required.
 
 = 1.0.0 =
 Initial release.

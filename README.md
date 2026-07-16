@@ -202,6 +202,9 @@ Inside the preview shell the client will see:
 <!-- CONTRIBUTING -->
 ## Changelog
 
+1.1.0
+* Internal renaming and a security fix to the annotation status endpoint — safe to update, no admin action required.
+
 1.0.0
 * Initial release
 

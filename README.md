@@ -23,7 +23,7 @@
 
 Tags: client review, annotations, feedback, preview, site review 
 Requires at least: 6.7 
-Tested up to: 7.0 
+Tested up to: 7.1 
 Requires PHP: 8.0 
 License: GPL-2.0-or-later
     <br />
@@ -201,6 +201,9 @@ Inside the preview shell the client will see:
 
 <!-- CONTRIBUTING -->
 ## Changelog
+
+1.1.1
+* Tested on WP version 7.1, no issues detected.
 
 1.1.0
 * Internal renaming and a security fix to the annotation status endpoint — safe to update, no admin action required.

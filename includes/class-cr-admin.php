@@ -9,6 +9,105 @@ class PDCR_Admin {
 	public static function init(): void {
 		add_action( 'admin_menu',            [ __CLASS__, 'add_menu' ] );
 		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'enqueue_scripts' ] );
+		add_action( 'admin_post_pdcr_export_csv', [ __CLASS__, 'export_csv' ] );
+	}
+
+	/**
+	 * URL that downloads the comments spreadsheet — all reviewers, or just one.
+	 */
+	public static function export_url( int $reviewer = 0 ): string {
+		$args = [ 'action' => 'pdcr_export_csv' ];
+		if ( $reviewer ) $args['reviewer'] = $reviewer;
+		return wp_nonce_url( add_query_arg( $args, admin_url( 'admin-post.php' ) ), 'pdcr_export_csv' );
+	}
+
+	/**
+	 * Streams every comment as a CSV spreadsheet (opens in Excel, Numbers,
+	 * and Google Sheets). Pin numbers match the shell: counted per page and
+	 * viewport across all reviewers, oldest first.
+	 */
+	public static function export_csv(): void {
+		check_admin_referer( 'pdcr_export_csv' );
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized' );
+
+		global $wpdb;
+		$reviewer = isset( $_GET['reviewer'] ) ? absint( wp_unslash( $_GET['reviewer'] ) ) : 0;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// $wpdb->users and $wpdb->prefix are WP core internals, not user input.
+		$rows = $wpdb->get_results(
+			"SELECT a.*, u.display_name AS author_name, u.user_email AS author_email
+			 FROM {$wpdb->prefix}cr_annotations a
+			 LEFT JOIN {$wpdb->users} u ON a.user_id = u.ID
+			 ORDER BY a.page_url, FIELD(a.device, 'desktop', 'tablet', 'mobile'), a.created_at, a.id"
+		) ?: [];
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		$status_labels = [
+			'open'                => 'Open',
+			'resolved'            => 'Done',
+			'needs_clarification' => 'Needs Clarification',
+		];
+		$device_labels = [
+			'desktop' => 'Desktop (1440px)',
+			'tablet'  => 'Tablet (768px)',
+			'mobile'  => 'Mobile (390px)',
+		];
+
+		$lines   = [];
+		$lines[] = self::csv_line( [ 'Page', 'Page URL', 'Viewport', 'Pin #', 'Status', 'Comment', 'Commenter', 'Commenter Email', 'Note to Client', 'Created', 'Last Updated' ] );
+
+		$pin_counts = [];
+		foreach ( $rows as $row ) {
+			$group                = $row->page_url . '|' . $row->device;
+			$pin_counts[ $group ] = ( $pin_counts[ $group ] ?? 0 ) + 1;
+
+			if ( $reviewer && (int) $row->user_id !== $reviewer ) continue;
+
+			$lines[] = self::csv_line( [
+				$row->page_url,
+				home_url( $row->page_url ),
+				$device_labels[ $row->device ] ?? $row->device,
+				$pin_counts[ $group ],
+				$status_labels[ $row->status ] ?? $row->status,
+				$row->comment,
+				$row->author_name ?? 'Deleted user',
+				$row->author_email ?? '',
+				$row->admin_note ?? '',
+				wp_date( 'Y-m-d g:i a', strtotime( $row->created_at ) ),
+				wp_date( 'Y-m-d g:i a', strtotime( $row->updated_at ) ),
+			] );
+		}
+
+		$name = 'client-review-comments';
+		if ( $reviewer ) {
+			$user = get_user_by( 'id', $reviewer );
+			if ( $user ) $name .= '-' . sanitize_title( $user->display_name );
+		}
+		$name .= '-' . wp_date( 'Y-m-d' ) . '.csv';
+
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="' . $name . '"' );
+
+		// UTF-8 BOM so Excel reads accented characters and emoji correctly.
+		echo "\xEF\xBB\xBF" . implode( "\r\n", $lines ) . "\r\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV download, not HTML; every cell is quoted by csv_line().
+		exit;
+	}
+
+	/**
+	 * One RFC 4180 CSV row. Cells starting with a formula trigger character
+	 * are prefixed with an apostrophe so spreadsheet apps show them as text
+	 * instead of running them (CSV/formula injection).
+	 */
+	private static function csv_line( array $cells ): string {
+		return implode( ',', array_map( static function ( $cell ): string {
+			$cell = (string) $cell;
+			if ( '' !== $cell && in_array( $cell[0], [ '=', '+', '-', '@', "\t", "\r" ], true ) ) {
+				$cell = "'" . $cell;
+			}
+			return '"' . str_replace( '"', '""', $cell ) . '"';
+		}, $cells ) );
 	}
 
 	public static function add_menu(): void {

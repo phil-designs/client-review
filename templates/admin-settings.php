@@ -77,6 +77,39 @@ $fonts = PDCR_Settings::FONTS;
 			</table>
 		</div>
 
+		<!-- ── Headings & Form Fields ─────────────────────────────── -->
+		<div class="cr-admin-card">
+			<h2>Headings &amp; Form Fields</h2>
+			<p class="description">Applies to the login and registration pages and the comment inputs in the review shell. Field focus borders use the accent colour.</p>
+			<table class="form-table cr-settings-table" role="presentation">
+				<tr>
+					<th scope="row">Heading Colour</th>
+					<td><?php PDCR_Settings::color_field( 'heading_color', $s['heading_color'] ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="cr_heading_size">Heading Size (px)</label></th>
+					<td>
+						<input type="number" id="cr_heading_size" name="pdcr_settings[heading_size]"
+							value="<?php echo esc_attr( $s['heading_size'] ); ?>"
+							min="12" max="72" step="1" style="width:80px">
+						<p class="description">Main heading on the login and registration pages.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Field Background</th>
+					<td><?php PDCR_Settings::color_field( 'field_bg', $s['field_bg'] ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row">Field Text</th>
+					<td><?php PDCR_Settings::color_field( 'field_text', $s['field_text'] ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row">Field Border</th>
+					<td><?php PDCR_Settings::color_field( 'field_border', $s['field_border'] ); ?></td>
+				</tr>
+			</table>
+		</div>
+
 		<!-- ── Primary Button ─────────────────────────────────────── -->
 		<div class="cr-admin-card">
 			<h2>Primary Button</h2>

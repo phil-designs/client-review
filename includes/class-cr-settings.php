@@ -44,6 +44,14 @@ class PDCR_Settings {
 		'login_button'   => 'Sign in',
 
 		'accent'            => '#F7941D',
+
+		// Headings & form fields (login, registration, comment inputs)
+		'heading_color' => '#ffffff',
+		'heading_size'  => '26',
+		'field_bg'      => '#111111',
+		'field_text'    => '#e8e8e8',
+		'field_border'  => '#333333',
+
 		'btn_border_radius'  => '30',
 		'btn_font_weight'    => '600',
 
@@ -92,6 +100,7 @@ class PDCR_Settings {
 
 		$color_keys = [
 			'accent',
+			'heading_color', 'field_bg', 'field_text', 'field_border',
 			'btn_primary_bg', 'btn_primary_border', 'btn_primary_color',
 			'btn_primary_hover_bg', 'btn_primary_hover_border', 'btn_primary_hover_color',
 			'btn_secondary_bg', 'btn_secondary_border', 'btn_secondary_color',
@@ -103,6 +112,9 @@ class PDCR_Settings {
 		}
 
 		$data['btn_border_radius'] = (string) absint( $raw['btn_border_radius'] ?? self::DEFAULTS['btn_border_radius'] );
+
+		$heading_size         = absint( $raw['heading_size'] ?? 0 );
+		$data['heading_size'] = (string) ( $heading_size >= 12 && $heading_size <= 72 ? $heading_size : self::DEFAULTS['heading_size'] );
 
 		$allowed_weights = [ '300', '400', '500', '600', '700', '800', '900' ];
 		$data['btn_font_weight'] = in_array( $raw['btn_font_weight'] ?? '', $allowed_weights, true )
@@ -151,9 +163,16 @@ class PDCR_Settings {
 	 * down to our own handles at the last possible moment keeps these
 	 * pages isolated the way they were originally designed, while still
 	 * using wp_enqueue_style()/wp_enqueue_script() throughout.
+	 *
+	 * The queue is pruned again right before the head and footer print,
+	 * because some styles are enqueued after wp_enqueue_scripts (classic
+	 * themes get WordPress global styles enqueued on wp_footer). Callbacks
+	 * that echo CSS straight into wp_head/wp_footer (Customizer "Additional
+	 * CSS", theme <style> blocks, etc.) bypass the queue entirely, so those
+	 * hooks are stripped down to the core callbacks these pages need.
 	 */
 	public static function isolate_page_assets( array $style_handles, array $script_handles = [] ): void {
-		add_action( 'wp_enqueue_scripts', static function () use ( $style_handles, $script_handles ): void {
+		$prune = static function () use ( $style_handles, $script_handles ): void {
 			global $wp_styles, $wp_scripts;
 			if ( $wp_styles instanceof WP_Styles ) {
 				$wp_styles->queue = array_values( array_intersect( $wp_styles->queue, $style_handles ) );
@@ -161,7 +180,38 @@ class PDCR_Settings {
 			if ( $wp_scripts instanceof WP_Scripts ) {
 				$wp_scripts->queue = array_values( array_intersect( $wp_scripts->queue, $script_handles ) );
 			}
-		}, PHP_INT_MAX );
+		};
+		add_action( 'wp_enqueue_scripts',      $prune, PHP_INT_MAX );
+		add_action( 'wp_print_styles',         $prune, PHP_INT_MAX );
+		add_action( 'wp_print_scripts',        $prune, PHP_INT_MAX );
+		add_action( 'wp_print_footer_scripts', $prune, 0 );
+
+		self::restrict_hook( 'wp_head', [
+			'wp_enqueue_scripts',
+			'wp_resource_hints',
+			'wp_robots',
+			'wp_print_styles',
+			'wp_print_head_scripts',
+			'wp_site_icon',
+		] );
+		self::restrict_hook( 'wp_footer', [
+			'wp_print_footer_scripts',
+		] );
+	}
+
+	/**
+	 * Removes every callback on $hook except the named core functions.
+	 */
+	private static function restrict_hook( string $hook, array $allowed ): void {
+		global $wp_filter;
+		if ( empty( $wp_filter[ $hook ] ) ) return;
+
+		foreach ( $wp_filter[ $hook ]->callbacks as $priority => $callbacks ) {
+			foreach ( $callbacks as $cb ) {
+				if ( is_string( $cb['function'] ) && in_array( $cb['function'], $allowed, true ) ) continue;
+				remove_action( $hook, $cb['function'], $priority );
+			}
+		}
 	}
 
 	/**
@@ -250,7 +300,18 @@ class PDCR_Settings {
 		$radius = absint( $s['btn_border_radius'] ) . 'px';
 		$weight = esc_attr( $s['btn_font_weight'] );
 
+		$heading_color = esc_attr( $s['heading_color'] );
+		$heading_size  = absint( $s['heading_size'] ) . 'px';
+		$field_bg      = esc_attr( $s['field_bg'] );
+		$field_text    = esc_attr( $s['field_text'] );
+		$field_border  = esc_attr( $s['field_border'] );
+
 		return ":root {
+	--cr-heading-color: {$heading_color};
+	--cr-heading-size: {$heading_size};
+	--cr-field-bg: {$field_bg};
+	--cr-field-text: {$field_text};
+	--cr-field-border: {$field_border};
 	--cr-font-heading: '{$heading}', sans-serif;
 	--cr-font-body: '{$body}', sans-serif;
 	--cr-accent: {$accent};

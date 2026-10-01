@@ -4,7 +4,7 @@ Tags: client review, annotations, feedback, preview, site review
 Requires at least: 6.7
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,12 @@ Yes. The site is rendered in an iframe and clients can navigate normally. Clicki
 
 == Changelog ==
 
+= 1.2.0 =
+* Login, registration, and review shell pages no longer pick up the active theme's styles (global styles, Customizer CSS, or theme `<style>` blocks)
+* New "Headings & Form Fields" settings: heading colour, heading size, and field background, text, and border colours
+* Comment and edit fields keep the plugin's colours when focused
+* New CSV export on the Reviews page: every comment with its page, viewport, pin number, status, commenter, and note — for all reviewers or just one
+
 = 1.1.0 =
 * Renamed all classes, hooks, option names, nonces, and asset handles to the `PDCR`/`pdcr_` prefix
 * Fixed a security issue where the annotation status REST endpoint had no permission check
@@ -102,6 +108,9 @@ Yes. The site is rendered in an iframe and clients can navigate normally. Clicki
 * Settings page for typography, accent colour, and button styling customisation
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Fixes theme styles leaking into the review pages, adds heading and form-field colour settings, and adds a CSV export of all comments.
 
 = 1.1.0 =
 Internal renaming and a security fix to the annotation status endpoint — safe to update, no admin action required.

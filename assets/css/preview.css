@@ -279,14 +279,16 @@ html, body.cr-shell {
 	margin-bottom: 4px;
 }
 
-.cr-sidebar__title h3 {
+body.cr-shell .cr-sidebar__title h3 {
 	flex: 1;
 	font-family: var(--cr-font-heading, 'Oswald', sans-serif);
 	font-size: 15px;
 	font-weight: 500;
+	line-height: 1.5;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
-	color: #ffffff;
+	margin: 0;
+	color: var(--cr-heading-color, #ffffff);
 	white-space: nowrap;
 }
 
@@ -433,19 +435,49 @@ html, body.cr-shell {
 	white-space: pre-wrap;
 }
 
-.cr-inline-edit {
+/* Comment textareas — scoped to body.cr-shell so theme/global textarea
+   rules (white backgrounds, thick focus borders) can't override them. */
+body.cr-shell textarea.cr-inline-edit,
+body.cr-shell .cr-popup textarea {
+	-webkit-appearance: none;
+	appearance: none;
+	display: block;
 	width: 100%;
-	background: #1a1a1a;
-	border: 1px solid var(--cr-accent, #F7941D);
-	color: #e8e8e8;
-	padding: 8px;
+	height: auto;
+	margin: 0;
+	background: var(--cr-field-bg, #111111);
+	border: 1px solid var(--cr-field-border, #333333);
+	border-radius: 0;
+	box-shadow: none;
+	outline: none;
+	color: var(--cr-field-text, #e8e8e8);
+	-webkit-text-fill-color: var(--cr-field-text, #e8e8e8);
+	caret-color: var(--cr-field-text, #e8e8e8);
+	padding: 8px 10px;
 	font-size: 13px;
-	resize: vertical;
-	min-height: 60px;
+	font-weight: 400;
 	font-family: var(--cr-font-body, 'Poppins', sans-serif);
 	line-height: 1.5;
 }
-.cr-inline-edit:focus { outline: none; }
+body.cr-shell textarea.cr-inline-edit::placeholder,
+body.cr-shell .cr-popup textarea::placeholder {
+	color: color-mix(in srgb, var(--cr-field-text, #e8e8e8) 45%, transparent);
+	-webkit-text-fill-color: color-mix(in srgb, var(--cr-field-text, #e8e8e8) 45%, transparent);
+	opacity: 1;
+}
+body.cr-shell textarea.cr-inline-edit:focus,
+body.cr-shell .cr-popup textarea:focus {
+	outline: none;
+	box-shadow: none;
+	background: var(--cr-field-bg, #111111);
+	color: var(--cr-field-text, #e8e8e8);
+	border: 1px solid var(--cr-accent, #F7941D);
+}
+body.cr-shell textarea.cr-inline-edit {
+	border-color: var(--cr-accent, #F7941D);
+	resize: vertical;
+	min-height: 60px;
+}
 
 .cr-inline-edit-actions {
 	display: flex;
@@ -475,18 +507,7 @@ html, body.cr-shell {
 	display: none;
 }
 
-.cr-popup textarea {
-	width: 100%;
-	background: #111111;
-	border: 1px solid #333333;
-	color: #e8e8e8;
-	padding: 8px 10px;
-	font-size: 13px;
-	resize: none;
-	font-family: var(--cr-font-body, 'Poppins', sans-serif);
-	line-height: 1.5;
-}
-.cr-popup textarea:focus { outline: none; border-color: var(--cr-accent, #F7941D); }
+body.cr-shell .cr-popup textarea { resize: none; }
 
 .cr-popup__actions {
 	display: flex;
@@ -515,14 +536,15 @@ html, body.cr-shell {
 	width: 90%;
 }
 
-.cr-modal h3 {
+body.cr-shell .cr-modal h3 {
 	font-family: var(--cr-font-heading, 'Oswald', sans-serif);
 	font-size: 20px;
 	font-weight: 500;
+	line-height: 1.3;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
-	margin-bottom: 12px;
-	color: #ffffff;
+	margin: 0 0 12px;
+	color: var(--cr-heading-color, #ffffff);
 }
 
 .cr-modal p  { font-size: 13px; color: #888888; line-height: 1.7; margin-bottom: 28px; }

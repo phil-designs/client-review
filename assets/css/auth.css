@@ -1,7 +1,11 @@
-/* Client Review — Login & Invite Registration pages */
+/* Client Review — Login & Invite Registration pages
+   Selectors are scoped to body.pdcr-auth so theme/global CSS that slips
+   through can't out-specify them. */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
+body.pdcr-auth {
 	font-family: var(--cr-font-body, 'Poppins', sans-serif);
+	font-size: 14px;
+	line-height: 1.5;
 	background: #111111;
 	color: #e8e8e8;
 	min-height: 100vh;
@@ -10,7 +14,7 @@ body {
 	justify-content: center;
 	padding: 24px;
 }
-.card {
+body.pdcr-auth .card {
 	background: #1a1a1a;
 	border: 1px solid #2a2a2a;
 	border-top: 3px solid var(--cr-accent, #F7941D);
@@ -18,59 +22,97 @@ body {
 	width: 100%;
 	max-width: 420px;
 }
-.logo {
+body.pdcr-auth .card .logo {
 	font-family: var(--cr-font-heading, 'Oswald', sans-serif);
 	font-size: 13px;
 	font-weight: 400;
+	line-height: 1.5;
 	color: var(--cr-accent, #F7941D);
-	margin-bottom: 28px;
+	margin: 0 0 28px;
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 }
-h1 {
+body.pdcr-auth .card h1 {
 	font-family: var(--cr-font-heading, 'Oswald', sans-serif);
-	font-size: 26px;
+	font-size: var(--cr-heading-size, 26px);
 	font-weight: 500;
+	font-style: normal;
+	line-height: 1.2;
 	letter-spacing: 0.03em;
 	text-transform: uppercase;
-	margin-bottom: 8px;
-	color: #ffffff;
+	text-shadow: none;
+	margin: 0 0 8px;
+	padding: 0;
+	color: var(--cr-heading-color, #ffffff);
+	-webkit-text-fill-color: currentColor;
+	background: none;
 }
-.subtitle { font-size: 13px; color: #888888; margin-bottom: 28px; line-height: 1.6; }
-.field { margin-bottom: 16px; }
-label {
+body.pdcr-auth .card .subtitle { font-size: 13px; color: #888888; margin: 0 0 28px; line-height: 1.6; }
+body.pdcr-auth .card .field { margin: 0 0 16px; }
+body.pdcr-auth .card label {
 	display: block;
 	font-family: var(--cr-font-heading, 'Oswald', sans-serif);
 	font-size: 11px;
 	font-weight: 400;
+	line-height: 1.5;
 	letter-spacing: 0.07em;
 	text-transform: uppercase;
-	margin-bottom: 6px;
+	margin: 0 0 6px;
 	color: #aaaaaa;
 }
-input {
+body.pdcr-auth .card input {
+	-webkit-appearance: none;
+	appearance: none;
+	display: block;
 	width: 100%;
+	height: auto;
+	margin: 0;
 	padding: 10px 14px;
-	background: #111111;
-	border: 2px solid #333333;
+	background: var(--cr-field-bg, #111111);
+	border: 2px solid var(--cr-field-border, #333333);
 	border-radius: var(--cr-btn-radius, 30px);
-	color: #e8e8e8;
+	box-shadow: none;
+	outline: none;
+	color: var(--cr-field-text, #e8e8e8);
+	-webkit-text-fill-color: var(--cr-field-text, #e8e8e8);
 	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
 	font-family: var(--cr-font-body, 'Poppins', sans-serif);
 	transition: border-color 0.2s;
 }
-input:focus { outline: none; border-color: var(--cr-accent, #F7941D); }
-input.error { border-color: #cc4444; }
-.hint { font-size: 12px; color: #555555; margin-top: 4px; }
-.error-banner {
+body.pdcr-auth .card input::placeholder {
+	color: color-mix(in srgb, var(--cr-field-text, #e8e8e8) 45%, transparent);
+	-webkit-text-fill-color: color-mix(in srgb, var(--cr-field-text, #e8e8e8) 45%, transparent);
+	opacity: 1;
+}
+body.pdcr-auth .card input:focus {
+	outline: none;
+	box-shadow: none;
+	background: var(--cr-field-bg, #111111);
+	color: var(--cr-field-text, #e8e8e8);
+	border-color: var(--cr-accent, #F7941D);
+}
+/* Browser autofill otherwise paints its own light background. */
+body.pdcr-auth .card input:-webkit-autofill,
+body.pdcr-auth .card input:-webkit-autofill:hover,
+body.pdcr-auth .card input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--cr-field-text, #e8e8e8);
+	box-shadow: 0 0 0 1000px var(--cr-field-bg, #111111) inset;
+	caret-color: var(--cr-field-text, #e8e8e8);
+}
+body.pdcr-auth .card input.error { border-color: #cc4444; }
+body.pdcr-auth .card .hint { font-size: 12px; color: #555555; margin: 4px 0 0; }
+body.pdcr-auth .card .error-banner {
 	background: rgba(204,68,68,0.12);
 	border-left: 3px solid #cc4444;
 	padding: 12px 14px;
 	font-size: 13px;
 	color: #f08080;
-	margin-bottom: 20px;
+	margin: 0 0 20px;
 }
-.expired-banner {
+body.pdcr-auth .card .error-banner a { color: inherit; }
+body.pdcr-auth .card .expired-banner {
 	background: color-mix(in srgb, var(--cr-accent, #F7941D) 10%, transparent);
 	border-left: 3px solid var(--cr-accent, #F7941D);
 	padding: 16px;
@@ -78,31 +120,39 @@ input.error { border-color: #cc4444; }
 	color: var(--cr-accent, #F7941D);
 	text-align: center;
 }
-.submit-btn {
+body.pdcr-auth .card .submit-btn {
+	-webkit-appearance: none;
+	appearance: none;
+	display: block;
 	width: 100%;
+	height: auto;
 	padding: 13px;
 	background: var(--cr-btn-p-bg, #F7941D);
 	color: var(--cr-btn-p-color, #ffffff);
 	border: 2px solid var(--cr-btn-p-border, #F7941D);
 	border-radius: var(--cr-btn-radius, 30px);
+	box-shadow: none;
+	text-shadow: none;
+	text-transform: none;
 	font-family: var(--cr-font-body, 'Poppins', sans-serif);
 	font-size: 14px;
 	font-weight: var(--cr-btn-font-weight, 600);
+	line-height: 1.5;
 	cursor: pointer;
-	margin-top: 8px;
+	margin: 8px 0 0;
 	letter-spacing: 0.02em;
 	transition: all 0.25s ease;
 }
-.submit-btn:hover {
+body.pdcr-auth .card .submit-btn:hover {
 	background: var(--cr-btn-p-hover-bg, transparent);
 	color: var(--cr-btn-p-hover-color, #F7941D);
 	border-color: var(--cr-btn-p-hover-border, #F7941D);
 }
-.login-link {
+body.pdcr-auth .card .login-link {
 	text-align: center;
-	margin-top: 20px;
+	margin: 20px 0 0;
 	font-size: 13px;
 	color: #555555;
 }
-.login-link a { color: var(--cr-accent, #F7941D); text-decoration: none; }
-.login-link a:hover { text-decoration: underline; }
+body.pdcr-auth .card .login-link a { color: var(--cr-accent, #F7941D); text-decoration: none; }
+body.pdcr-auth .card .login-link a:hover { text-decoration: underline; }

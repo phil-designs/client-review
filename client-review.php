@@ -3,7 +3,7 @@
  * Plugin Name:       PhilDesigns Client Review
  * Plugin URI:        https://github.com/phil-designs/client-review
  * Description:       Send clients a private preview link to annotate your site before launch. Includes responsive device switcher, visual pin annotations, and an admin review dashboard.
- * Version:           1.1.1
+ * Version:           1.2.0
  * Author:            PhilDesigns
  * Author URI:        https://phildesigns.com
  * License:           GPL-2.0-or-later
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PDCR_VERSION', '1.1.0' );
+define( 'PDCR_VERSION', '1.2.0' );
 
 require_once __DIR__ . '/includes/class-cr-activator.php';
 require_once __DIR__ . '/includes/class-cr-role.php';

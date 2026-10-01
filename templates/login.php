@@ -19,7 +19,7 @@ if ( isset( $_GET['redirect_to'] ) ) {
 	<title>Sign In &mdash; <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
 	<?php wp_head(); ?>
 </head>
-<body>
+<body class="pdcr-auth">
 <div class="card">
 	<p class="logo"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></p>
 	<h1><?php echo esc_html( $_cr_s['login_heading'] ); ?></h1>

@@ -20,6 +20,9 @@ $device_labels = [ 'desktop' => 'Desktop', 'tablet' => 'Tablet', 'mobile' => 'Mo
 		<!-- Reviewer list -->
 		<div class="cr-reviewer-list cr-admin-card">
 			<h2>Reviewers</h2>
+			<?php if ( ! empty( $reviewers ) ) : ?>
+				<a href="<?php echo esc_url( PDCR_Admin::export_url() ); ?>" class="button cr-export-all">Export all comments (CSV)</a>
+			<?php endif; ?>
 			<?php if ( empty( $reviewers ) ) : ?>
 				<p class="description">No reviews yet. Send an invite link to your client to get started.</p>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=client-review' ) ); ?>" class="button button-primary" style="margin-top:12px">Go to Invite Links</a>
@@ -54,7 +57,10 @@ $device_labels = [ 'desktop' => 'Desktop', 'tablet' => 'Tablet', 'mobile' => 'Mo
 				<div class="cr-admin-card">
 					<div class="cr-reviewer-header">
 						<h2><?php echo esc_html( $reviewer_name ); ?></h2>
-						<a href="<?php echo esc_url( home_url( '/' . PDCR_Role::SHELL_SLUG . '/' ) ); ?>" target="_blank" class="button">Open Preview Shell</a>
+						<div class="cr-reviewer-header__actions">
+							<a href="<?php echo esc_url( PDCR_Admin::export_url( $selected_reviewer ) ); ?>" class="button">Export CSV</a>
+							<a href="<?php echo esc_url( home_url( '/' . PDCR_Role::SHELL_SLUG . '/' ) ); ?>" target="_blank" class="button">Open Preview Shell</a>
+						</div>
 					</div>
 
 					<?php foreach ( $pages as $page_url => $devices ) : ?>

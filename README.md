@@ -81,7 +81,9 @@ All comments are stored per page and per device size. When the client finishes, 
 * "Finish Review" button sends a formatted HTML email summary to the site admin
 * Admin dashboard with per-reviewer comment lists, status controls (Open / Done / Needs Clarification), and admin note fields
 * Client Reviewer role is blocked from wp-admin and has the admin bar hidden
-* Customisable typography, accent colour, and button styles via the Settings page
+* Customisable typography, accent colour, heading, form field, and button styles via the Settings page
+* Login, registration, and review pages are isolated from the active theme's styles
+* CSV export of every comment — page, viewport, pin number, status, commenter, and admin note — for all reviewers or one
 * No external dependencies — no third-party services or APIs required
 
 
@@ -173,6 +175,7 @@ Inside the preview shell the client will see:
 1. Go to **wp-admin → Client Review → Reviews**
 2. Click a client name to load their full comment list, grouped by page and device
 3. For each comment you can change the **status** (Open / Done / Needs Clarification) and add an **admin note**
+4. Click **Export all comments (CSV)** above the reviewer list, or **Export CSV** next to a reviewer's name, to download a spreadsheet of the comments
 
 ---
 
@@ -182,8 +185,8 @@ Inside the preview shell the client will see:
 | Page | Location | Purpose |
 |------|----------|---------|
 | Invite Links | Client Review → Invite Links | Generate and manage invite URLs |
-| Reviews | Client Review → Reviews | View client feedback, update statuses, add notes |
-| Settings | Client Review → Settings | Typography, colours, and button customisation |
+| Reviews | Client Review → Reviews | View client feedback, update statuses, add notes, export comments to CSV |
+| Settings | Client Review → Settings | Typography, colours, heading, form field, and button customisation |
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -201,6 +204,12 @@ Inside the preview shell the client will see:
 
 <!-- CONTRIBUTING -->
 ## Changelog
+
+1.2.0
+* Login, registration, and review shell pages no longer pick up the active theme's styles (global styles, Customizer CSS, or theme `<style>` blocks).
+* New "Headings & Form Fields" settings: heading colour, heading size, and field background, text, and border colours.
+* Comment and edit fields keep the plugin's colours when focused.
+* New CSV export on the Reviews page: every comment with its page, viewport, pin number, status, commenter, and note — for all reviewers or just one.
 
 1.1.1
 * Tested on WP version 7.1, no issues detected.

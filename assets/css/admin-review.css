@@ -171,6 +171,9 @@
 }
 
 .cr-reviewer-header h2 { margin: 0; }
+.cr-reviewer-header__actions { display: flex; gap: 8px; }
+
+.cr-export-all { margin-bottom: 12px; }
 
 .cr-page-group { margin-bottom: 32px; }
 

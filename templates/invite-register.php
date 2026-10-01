@@ -15,7 +15,7 @@ $_cr_s = PDCR_Settings::get();
 	<title>Review Access &mdash; <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
 	<?php wp_head(); ?>
 </head>
-<body>
+<body class="pdcr-auth">
 <div class="card">
 	<p class="logo"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></p>
 
